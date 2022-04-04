@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package rpc;
+
+message KeyValue {
+  string key = 1;
+  string value = 2;
+}
+
+message Pattern {
+  string prefix = 1;
+  string suffix = 2;
+}
+
+message Bool {
+  bool value = 1;
+}
+
+message Key {
+  string key = 1;
+}
+
+message Value {
+  string value = 1;
+}
+
+message StringList {
+  repeated string list = 1;
+}
+
+message Clock {
+  uint64 timestamp = 1;
+}
+
+message ListRemoveResponse {
+  uint32 removed = 1;
+}
+
+service TribStorage {
+  rpc get(Key) returns (Value);
+  rpc set(KeyValue) returns (Bool);
+  rpc keys(Pattern) returns (StringList);
+  rpc listGet(Key) returns (StringList);
+  rpc listAppend(KeyValue) returns (Bool);
+  rpc listRemove(KeyValue) returns (ListRemoveResponse);
+  rpc listKeys(Pattern) returns (StringList);
+  rpc clock(Clock) returns (Clock);
+}

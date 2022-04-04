@@ -1,0 +1,18 @@
+[package]
+name = "lab"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tribbler = { path = "../tribbler" }
+tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "time"] }
+tonic = "0.6"
+log = "0.4"
+env_logger = "0.9"
+rand = "0.8"
+async-trait = "0.1.53"
+
+[build-dependencies]
+tonic-build = { version = "0.6", features = ["rustfmt"] }
