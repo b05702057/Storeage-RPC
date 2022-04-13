@@ -2,7 +2,7 @@ use tonic::Response;
 use tribbler::{
     self,
     rpc,
-    storage::{KeyValue, Pattern, Storage}, // to implement the rpcs
+    storage::{KeyValue, List, Pattern, Storage}, // to implement the rpcs
 };
 
 // declare a new struct and add fileds to it
@@ -35,12 +35,12 @@ impl rpc::trib_storage_server::TribStorage for StorageServer {
         let output = self
             .storage
             .set(&KeyValue {
-                key: kv.key.clone(),
-                value: kv.value.clone(),
+                key: kv.key,
+                value: kv.value,
             })
             .await;
         match output {
-            Ok(t) => Ok(Response::new(rpc::Bool { value: t.clone() })),
+            Ok(t) => Ok(Response::new(rpc::Bool { value: t })),
             Err(e) => Err(tonic::Status::unknown("fail to set")),
         }
     }
@@ -53,12 +53,12 @@ impl rpc::trib_storage_server::TribStorage for StorageServer {
         let output = self
             .storage
             .keys(&Pattern {
-                prefix: p.prefix.clone(),
-                suffix: p.suffix.clone(),
+                prefix: p.prefix,
+                suffix: p.suffix,
             })
             .await;
         match output {
-            Ok(t) => Ok(Response::new(rpc::StringList { list: t.0.clone() })),
+            Ok(List(t)) => Ok(Response::new(rpc::StringList { list: t })),
             Err(e) => Err(tonic::Status::unknown("fail keys")),
         }
     }
@@ -70,7 +70,7 @@ impl rpc::trib_storage_server::TribStorage for StorageServer {
         let k = request.into_inner();
         let output = self.storage.list_get(k.key.as_str()).await;
         match output {
-            Ok(t) => Ok(Response::new(rpc::StringList { list: t.0.clone() })),
+            Ok(List(t)) => Ok(Response::new(rpc::StringList { list: t })),
             Err(e) => Err(tonic::Status::unknown("fail keys")),
         }
     }
@@ -83,12 +83,12 @@ impl rpc::trib_storage_server::TribStorage for StorageServer {
         let output = self
             .storage
             .list_append(&KeyValue {
-                key: kv.key.clone(),
-                value: kv.value.clone(),
+                key: kv.key,
+                value: kv.value,
             })
             .await;
         match output {
-            Ok(t) => Ok(Response::new(rpc::Bool { value: t.clone() })),
+            Ok(t) => Ok(Response::new(rpc::Bool { value: t })),
             Err(e) => Err(tonic::Status::unknown("fail list_append")),
         }
     }
@@ -101,14 +101,12 @@ impl rpc::trib_storage_server::TribStorage for StorageServer {
         let output = self
             .storage
             .list_remove(&KeyValue {
-                key: kv.key.clone(),
-                value: kv.value.clone(),
+                key: kv.key,
+                value: kv.value,
             })
             .await;
         match output {
-            Ok(t) => Ok(Response::new(rpc::ListRemoveResponse {
-                removed: t.clone(),
-            })),
+            Ok(t) => Ok(Response::new(rpc::ListRemoveResponse { removed: t })),
             Err(e) => Err(tonic::Status::unknown("fail list_remove")),
         }
     }
@@ -121,12 +119,12 @@ impl rpc::trib_storage_server::TribStorage for StorageServer {
         let output = self
             .storage
             .list_keys(&Pattern {
-                prefix: p.prefix.clone(),
-                suffix: p.suffix.clone(),
+                prefix: p.prefix,
+                suffix: p.suffix,
             })
             .await;
         match output {
-            Ok(t) => Ok(Response::new(rpc::StringList { list: t.0.clone() })),
+            Ok(List(t)) => Ok(Response::new(rpc::StringList { list: t })),
             Err(e) => Err(tonic::Status::unknown("fail list_keys")),
         }
     }
@@ -138,9 +136,7 @@ impl rpc::trib_storage_server::TribStorage for StorageServer {
         let t = request.into_inner();
         let output = self.storage.clock(t.timestamp).await;
         match output {
-            Ok(t) => Ok(Response::new(rpc::Clock {
-                timestamp: t.clone(),
-            })),
+            Ok(t) => Ok(Response::new(rpc::Clock { timestamp: t })),
             Err(e) => Err(tonic::Status::unknown("fail clock")),
         }
     }
