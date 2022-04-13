@@ -563,6 +563,10 @@
 //!
 //! ## Happy Lab 1!
 //!
+
+mod client; // make StorageClient visible in the lab 1 module
 mod lab;
+mod server; // make StorageServer visible in the lab 1 module
+
 pub use crate::lab1::lab::new_client;
 pub use crate::lab1::lab::serve_back;
