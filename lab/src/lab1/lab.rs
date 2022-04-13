@@ -3,6 +3,7 @@ use crate::lab1::server::StorageServer;
 use std::boxed::Box;
 use std::net::ToSocketAddrs;
 use tonic::transport::Server;
+use tribbler::err::TribblerError;
 use tribbler::{
     self,
     err::TribResult,
@@ -18,15 +19,16 @@ pub async fn serve_back(config: BackConfig) -> TribResult<()> {
     };
 
     // The server is ready if it reaches this line.
-    let _ = match config.ready {
-        Some(unwrapped_ready) => unwrapped_ready.send(true),
-        None => Ok(()),
-    };
-    match config.addr.to_socket_addrs() {
+
+    match config.addr.clone().to_socket_addrs() {
         Ok(iterator) => match iterator.last() {
             Some(socket_addr) => {
                 match config.shutdown {
                     Some(mut s) => {
+                        let _ = match config.ready {
+                            Some(unwrapped_ready) => unwrapped_ready.send(true),
+                            None => Ok(()),
+                        };
                         Server::builder()
                             .add_service(TribStorageServer::new(storage_server))
                             .serve_with_shutdown(socket_addr, async {
@@ -35,6 +37,10 @@ pub async fn serve_back(config: BackConfig) -> TribResult<()> {
                             .await?
                     }
                     None => {
+                        let _ = match config.ready {
+                            Some(unwrapped_ready) => unwrapped_ready.send(true),
+                            None => Ok(()),
+                        };
                         Server::builder()
                             .add_service(TribStorageServer::new(storage_server))
                             .serve(socket_addr)
@@ -42,7 +48,11 @@ pub async fn serve_back(config: BackConfig) -> TribResult<()> {
                     }
                 }
             }
-            None => return Ok(()),
+            None => {
+                return Err(Box::new(TribblerError::Unknown(
+                    "Cannot parse address".to_string(),
+                )))
+            }
         },
         Err(e) => return Err(Box::new(e)),
     };
