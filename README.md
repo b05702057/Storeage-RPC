@@ -11,4 +11,4 @@ Wrapped up a key-value storage interface to implement a server type and a client
 
 ### Note
 * Rust can be downloaded here: https://rustup.rs.
-* The detailed tasks are recorded here: https://canvas.ucsd.edu/courses/36677.
+* The detailed tasks are recorded here: [https://canvas.ucsd.edu/courses/36677](https://cseweb.ucsd.edu/classes/sp22/cse223B-a/tribbler/lab/lab1/index.html).
