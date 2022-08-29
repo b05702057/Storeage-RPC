@@ -18,15 +18,13 @@ pub async fn serve_back(config: BackConfig) -> TribResult<()> {
         storage: config.storage,
     };
 
-    // The server is ready if it reaches this line.
-
     match config.addr.clone().to_socket_addrs() {
         Ok(iterator) => match iterator.last() {
             Some(socket_addr) => {
                 match config.shutdown {
                     Some(mut s) => {
                         let _ = match config.ready {
-                            Some(unwrapped_ready) => unwrapped_ready.send(true),
+                            Some(unwrapped_ready) => unwrapped_ready.send(true), // The server is ready if it reaches this line.
                             None => Ok(()),
                         };
                         Server::builder()
@@ -58,7 +56,6 @@ pub async fn serve_back(config: BackConfig) -> TribResult<()> {
     };
     Ok(())
 }
-// post 44, 60, and 63
 
 /// This function should create a new client which implements the [Storage] trait.
 /// It should communicate with the backend that is started in the [serve_back] function.

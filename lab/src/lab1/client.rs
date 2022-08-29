@@ -18,7 +18,7 @@ pub struct StorageClient {
 impl KeyString for StorageClient {
     // add method implementations to match the tribbler::storage::Storage trait
     async fn get(&self, key: &str) -> TribResult<Option<String>> {
-        // acceptable but not efficient since we open a connection for each RPC call
+        // acceptable but inefficient since we open a connection for each RPC call
         let mut client = TribStorageClient::connect(self.addr.clone()).await?; // wait until we need to perform the first RPC function call
         let r = client
             .get(rpc::Key {
